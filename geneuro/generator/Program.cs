@@ -17,11 +17,8 @@ namespace generator {
         private static void Run(string[] args) {
             Settings.Load();
 
-            if (args.Length == 0) {
-                InvalidArguments();
-                Console.WriteLine("Use /? or /help to see available commands\n");
-                return;
-            }
+            if (args.Length == 0)
+                throw new Exception("error: invalid arguments\nUse /? or /help to see available commands");
 
             switch (args[0]) {
                 case "/?":
