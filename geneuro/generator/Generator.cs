@@ -43,7 +43,8 @@ namespace generator {
             for (char c = firstChar; c <= lastChar; c++)
                 Directory.CreateDirectory(Settings.Instance.OutputDir + "/" + c);
 
-            Brush brush = new SolidBrush(Color.Black);
+            Brush blackBrush = new SolidBrush(Color.Black);
+            Brush whiteBrush = new SolidBrush(Color.White);
 
             StringFormat format = new StringFormat();
             format.Alignment = StringAlignment.Center;
@@ -53,11 +54,12 @@ namespace generator {
                 Font font = new Font(fonts[i], sizes[i]);
 
                 for (char c = firstChar; c <= lastChar; c++) {
-                    Bitmap image = new Bitmap(Settings.Instance.Width, Settings.Instance.Height);
+                    Bitmap image = new Bitmap(Settings.Instance.Width, Settings.Instance.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 
                     Graphics g = Graphics.FromImage(image);
+                    g.FillRectangle(whiteBrush, 0, 0, Settings.Instance.Width, Settings.Instance.Height);
                     g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-                    g.DrawString(c.ToString(), font, brush, Settings.Instance.Width / 2, Settings.Instance.Height / 2, format);
+                    g.DrawString(c.ToString(), font, blackBrush, Settings.Instance.Width / 2, Settings.Instance.Height / 2, format);
 
                     image.Save(Settings.Instance.OutputDir + "/" + c + "/" + i + ".bmp");
                 }
