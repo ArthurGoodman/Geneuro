@@ -26,7 +26,7 @@ namespace geneuro {
                         Layers[i][j].DeltaWeights = new double[Layers[i + 1].Length];
 
                         for (int c = 0; c < Layers[i][j].Weights.Length; c++)
-                            Layers[i][j].Weights[c] = random.NextDouble() / 10000;
+                            Layers[i][j].Weights[c] =  random.NextDouble() / 1000000;
                     }
                 }
         }
@@ -40,8 +40,8 @@ namespace geneuro {
             for (int j = 0; j < Layers[Layers.Length - 1].Length; j++) {
                 Console.WriteLine(Layers[Layers.Length - 1][j].Output);
 
-                if (Math.Abs(Layers[Layers.Length - 1][j].Output) > maxValue) { // here
-                    maxValue = Math.Abs(Layers[Layers.Length - 1][j].Output); // here
+                if (Layers[Layers.Length - 1][j].Output > maxValue) {
+                    maxValue = Layers[Layers.Length - 1][j].Output;
                     maxIndex = j;
                 }
             }
@@ -50,13 +50,13 @@ namespace geneuro {
         }
 
         private double Sigmoid(double t) {
-            return 1.0 / (1 + Math.Exp(-2 * 1.0 * t)) - 0.5; // here
+            return 1.0 / (1 + Math.Exp(-2 * 1.0 * t));
         }
 
         private void Impulse(Bitmap image) {
             for (int j = 0; j < Layers[0].Length; j++) {
                 Color color = image.GetPixel(j / image.Width, j % image.Width);
-                Layers[0][j].Output = Sigmoid(1.0 - (double)(color.R + color.G + color.B) / 3 / 255);
+                Layers[0][j].Output = 1.0 - (double)(color.R + color.G + color.B) / 3 / 255;
             }
 
             for (int i = 1; i < Layers.Length; i++)
@@ -68,13 +68,13 @@ namespace geneuro {
                     Layers[i][j].Propagate();
 
                 for (int j = 0; j < Layers[i + 1].Length; j++)
-                    Layers[i + 1][j].Output = Sigmoid(Layers[i + 1][j].Output);
+                    Layers[i + 1][j].Output = 2.0 * (Sigmoid(Layers[i + 1][j].Output) - 0.5);
             }
         }
 
         public void Learn(string dataDirectoryPath) {
             DirectoryInfo[] dirs = new DirectoryInfo(dataDirectoryPath).GetDirectories();
-            const int numberOfSteps = 100;
+            const int numberOfSteps = 10;
 
             for (int step = 0; step < numberOfSteps; step++) {
                 Console.WriteLine(step);
@@ -93,13 +93,13 @@ namespace geneuro {
         }
 
         private void LearnFile(Bitmap image, int t) {
-            const double eta = 0.1;
+            const double eta = 0.0000625;
             const double alpha = 0.01;
 
             Impulse(image);
 
             for (int j = 0; j < Layers[Layers.Length - 1].Length; j++)
-                Layers[Layers.Length - 1][j].Delta = -Layers[Layers.Length - 1][j].Output * (1.0 - Layers[Layers.Length - 1][j].Output) * ((t == j ? -1.0 : 1.0) - Layers[Layers.Length - 1][j].Output); // here
+                Layers[Layers.Length - 1][j].Delta = -Layers[Layers.Length - 1][j].Output * (1.0 - Layers[Layers.Length - 1][j].Output) * ((t == j ? -1.0 : 1.0) - Layers[Layers.Length - 1][j].Output);
 
             for (int i = Layers.Length - 2; i >= 0; i--)
                 for (int j = 0; j < Layers[i].Length; j++)
