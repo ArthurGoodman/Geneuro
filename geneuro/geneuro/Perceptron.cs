@@ -37,20 +37,16 @@ namespace geneuro {
             int maxIndex = 0;
             double maxValue = -1;
 
-            for (int j = 0; j < Layers[Layers.Length - 1].Length; j++) {
-                Console.WriteLine(Layers[Layers.Length - 1][j].Output);
-
+            for (int j = 0; j < Layers[Layers.Length - 1].Length; j++)
                 if (Layers[Layers.Length - 1][j].Output > maxValue) {
                     maxValue = Layers[Layers.Length - 1][j].Output;
                     maxIndex = j;
                 }
-            }
 
             return maxIndex;
         }
 
         private double Sigmoid(double t) {
-            //return t > 0.5 ? 1 : 0;
             return 1.0 / (1 + Math.Exp(-2 * 1.0 * t));
         }
 
@@ -74,52 +70,49 @@ namespace geneuro {
         }
 
         public void Learn(string dataDirectoryPath) {
-            const int numberOfSteps = 100;
+            const int maxNumberOfSteps = 1000;
+            const double maxError = 1e-5;
 
             DirectoryInfo[] dirs = new DirectoryInfo(dataDirectoryPath).GetDirectories();
 
-            for (int step = 0; step < numberOfSteps; step++) {
-                Console.WriteLine(step);
-
+            for (int step = 0; step < maxNumberOfSteps; step++) {
                 int t = 0;
+
+                double averageTotalError = 0;
+                int count = 0;
 
                 foreach (DirectoryInfo dir in dirs) {
                     FileInfo[] files = dir.GetFiles();
 
-                    foreach (FileInfo file in files)
-                        LearnFile((Bitmap)Image.FromFile(file.FullName), t);
+                    foreach (FileInfo file in files) {
+                        averageTotalError += LearnFile((Bitmap)Image.FromFile(file.FullName), t);
+                        count++;
+                    }
 
                     t++;
                 }
+
+                averageTotalError /= count;
+
+                Console.WriteLine(step + ": " + averageTotalError);
+
+                if (Math.Abs(averageTotalError) <= maxError)
+                    break;
             }
         }
 
-        private void LearnFile(Bitmap image, int t) {
+        private double LearnFile(Bitmap image, int t) {
             const double eta = 0.1;
             const double alpha = 0.075;
 
             Impulse(image);
-
-            //for (int j = 0; j < Layers[Layers.Length - 1].Length; j++)
-            //    Layers[Layers.Length - 1][j].Delta = -Layers[Layers.Length - 1][j].Output * (1.0 - Layers[Layers.Length - 1][j].Output) * ((t == j ? 1.0 : 0.0) - Layers[Layers.Length - 1][j].Output);
-
-            //for (int i = Layers.Length - 2; i >= 0; i--)
-            //    for (int j = 0; j < Layers[i].Length; j++)
-            //        Layers[i][j].Delta = Layers[i][j].Output * (1.0 - Layers[i][j].Output) * Layers[i][j].DeltaSum();
-
-            //for (int i = Layers.Length - 2; i >= 0; i--)
-            //    for (int j = 0; j < Layers[i].Length; j++)
-            //        for (int c = 0; c < Layers[i][j].Weights.Length; c++) {
-            //            Layers[i][j].DeltaWeights[c] = alpha * Layers[i][j].DeltaWeights[c] + (1.0 - alpha) * eta * Layers[i + 1][c].Delta * Layers[i][j].Output;
-            //            Layers[i][j].Weights[c] += Layers[i][j].DeltaWeights[c];
-            //        }
 
             for (int j = 0; j < Layers[Layers.Length - 1].Length; j++)
                 Layers[Layers.Length - 1][j].Delta = (t == j ? 1.0 : 0.0) - Layers[Layers.Length - 1][j].Output;
 
             for (int i = Layers.Length - 2; i >= 0; i--)
                 for (int j = 0; j < Layers[i].Length; j++)
-                    Layers[i][j].Delta = Layers[i][j].Output * Layers[i][j].DeltaSum();
+                    Layers[i][j].Delta = Layers[i][j].DeltaSum();
 
             for (int i = Layers.Length - 2; i >= 0; i--)
                 for (int j = 0; j < Layers[i].Length; j++)
@@ -127,6 +120,15 @@ namespace geneuro {
                         Layers[i][j].DeltaWeights[c] = alpha * Layers[i][j].DeltaWeights[c] + (1.0 - alpha) * eta * Layers[i + 1][c].Delta * Layers[i][j].Output;
                         Layers[i][j].Weights[c] += Layers[i][j].DeltaWeights[c];
                     }
+
+            double averageError = 0;
+
+            for (int j = 0; j < Layers[Layers.Length - 1].Length; j++)
+                averageError += Layers[Layers.Length - 1][j].Delta;
+
+            averageError /= Layers[Layers.Length - 1].Length;
+
+            return averageError;
         }
 
         public void Load(string filePath) {
