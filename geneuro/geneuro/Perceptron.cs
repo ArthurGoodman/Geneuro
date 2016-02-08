@@ -26,7 +26,7 @@ namespace geneuro {
                         Layers[i][j].DeltaWeights = new double[Layers[i + 1].Length];
 
                         for (int c = 0; c < Layers[i][j].Weights.Length; c++)
-                            Layers[i][j].Weights[c] =  random.NextDouble() / 1000000;
+                            Layers[i][j].Weights[c] = random.NextDouble();
                     }
                 }
         }
@@ -50,12 +50,13 @@ namespace geneuro {
         }
 
         private double Sigmoid(double t) {
+            //return t > 0.5 ? 1 : 0;
             return 1.0 / (1 + Math.Exp(-2 * 1.0 * t));
         }
 
         private void Impulse(Bitmap image) {
             for (int j = 0; j < Layers[0].Length; j++) {
-                Color color = image.GetPixel(j / image.Width, j % image.Width);
+                Color color = image.GetPixel(j % image.Width, j / image.Width);
                 Layers[0][j].Output = 1.0 - (double)(color.R + color.G + color.B) / 3 / 255;
             }
 
@@ -68,13 +69,14 @@ namespace geneuro {
                     Layers[i][j].Propagate();
 
                 for (int j = 0; j < Layers[i + 1].Length; j++)
-                    Layers[i + 1][j].Output = 2.0 * (Sigmoid(Layers[i + 1][j].Output) - 0.5);
+                    Layers[i + 1][j].Output = Sigmoid(Layers[i + 1][j].Output);
             }
         }
 
         public void Learn(string dataDirectoryPath) {
+            const int numberOfSteps = 100;
+
             DirectoryInfo[] dirs = new DirectoryInfo(dataDirectoryPath).GetDirectories();
-            const int numberOfSteps = 10;
 
             for (int step = 0; step < numberOfSteps; step++) {
                 Console.WriteLine(step);
@@ -93,17 +95,31 @@ namespace geneuro {
         }
 
         private void LearnFile(Bitmap image, int t) {
-            const double eta = 0.0000625;
-            const double alpha = 0.01;
+            const double eta = 0.1;
+            const double alpha = 0.075;
 
             Impulse(image);
 
+            //for (int j = 0; j < Layers[Layers.Length - 1].Length; j++)
+            //    Layers[Layers.Length - 1][j].Delta = -Layers[Layers.Length - 1][j].Output * (1.0 - Layers[Layers.Length - 1][j].Output) * ((t == j ? 1.0 : 0.0) - Layers[Layers.Length - 1][j].Output);
+
+            //for (int i = Layers.Length - 2; i >= 0; i--)
+            //    for (int j = 0; j < Layers[i].Length; j++)
+            //        Layers[i][j].Delta = Layers[i][j].Output * (1.0 - Layers[i][j].Output) * Layers[i][j].DeltaSum();
+
+            //for (int i = Layers.Length - 2; i >= 0; i--)
+            //    for (int j = 0; j < Layers[i].Length; j++)
+            //        for (int c = 0; c < Layers[i][j].Weights.Length; c++) {
+            //            Layers[i][j].DeltaWeights[c] = alpha * Layers[i][j].DeltaWeights[c] + (1.0 - alpha) * eta * Layers[i + 1][c].Delta * Layers[i][j].Output;
+            //            Layers[i][j].Weights[c] += Layers[i][j].DeltaWeights[c];
+            //        }
+
             for (int j = 0; j < Layers[Layers.Length - 1].Length; j++)
-                Layers[Layers.Length - 1][j].Delta = -Layers[Layers.Length - 1][j].Output * (1.0 - Layers[Layers.Length - 1][j].Output) * ((t == j ? -1.0 : 1.0) - Layers[Layers.Length - 1][j].Output);
+                Layers[Layers.Length - 1][j].Delta = (t == j ? 1.0 : 0.0) - Layers[Layers.Length - 1][j].Output;
 
             for (int i = Layers.Length - 2; i >= 0; i--)
                 for (int j = 0; j < Layers[i].Length; j++)
-                    Layers[i][j].Delta = Layers[i][j].Output * (1.0 - Layers[i][j].Output) * Layers[i][j].DeltaSum();
+                    Layers[i][j].Delta = Layers[i][j].Output * Layers[i][j].DeltaSum();
 
             for (int i = Layers.Length - 2; i >= 0; i--)
                 for (int j = 0; j < Layers[i].Length; j++)

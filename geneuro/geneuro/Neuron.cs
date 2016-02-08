@@ -16,9 +16,8 @@
         }
 
         public void Propagate() {
-            for (int c = 0; c < Weights.Length; c++) {
+            for (int c = 0; c < Weights.Length; c++)
                 perceptron.Layers[layer + 1][c].Output += Output * Weights[c];
-            }
         }
 
         public double DeltaSum() {
