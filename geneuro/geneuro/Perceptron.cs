@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.IO;
 
 namespace geneuro {
@@ -32,8 +31,8 @@ namespace geneuro {
                 }
         }
 
-        public int Classify(string imagePath) {
-            Impulse((Bitmap)Image.FromFile(imagePath));
+        public int Classify(double[] input) {
+            Impulse(input);
 
             int maxIndex = 0;
             double maxValue = -1;
@@ -51,11 +50,9 @@ namespace geneuro {
             return 1.0 / (1 + Math.Exp(-2 * 1.0 * t));
         }
 
-        private void Impulse(Bitmap image) {
-            for (int j = 0; j < Layers[0].Length; j++) {
-                Color color = image.GetPixel(j % image.Width, j / image.Width);
-                Layers[0][j].Output = 1.0 - (double)(color.R + color.G + color.B) / 3 / 255;
-            }
+        private void Impulse(double[] input) {
+            for (int j = 0; j < Layers[0].Length; j++)
+                Layers[0][j].Output = input[j];
 
             for (int i = 1; i < Layers.Length; i++)
                 for (int j = 0; j < Layers[i].Length; j++)
@@ -70,27 +67,17 @@ namespace geneuro {
             }
         }
 
-        public void Learn(string dataDirectoryPath) {
+        public void Learn(TrainingSet trainingSet) {
             if (Settings.Instance.UseCustomLearningRate)
                 learningRate = Settings.Instance.LearningRate;
             else
-                learningRate = 1.0 / Directory.GetFiles(dataDirectoryPath, "*", SearchOption.AllDirectories).Length;
-
-            DirectoryInfo[] dirs = new DirectoryInfo(dataDirectoryPath).GetDirectories();
+                learningRate = 1.0 / trainingSet.Size();
 
             for (int step = 0; step < Settings.Instance.MaxLearningSteps; step++) {
-                int t = 0;
-
                 double totalError = 0;
 
-                foreach (DirectoryInfo dir in dirs) {
-                    FileInfo[] files = dir.GetFiles();
-
-                    foreach (FileInfo file in files)
-                        totalError += LearnFile((Bitmap)Image.FromFile(file.FullName), t);
-
-                    t++;
-                }
+                foreach (Example example in trainingSet)
+                    totalError += LearnExample(example);
 
                 Console.WriteLine(step + ": " + totalError);
 
@@ -99,13 +86,13 @@ namespace geneuro {
             }
         }
 
-        private double LearnFile(Bitmap image, int t) {
+        private double LearnExample(Example example) {
             const double alpha = 0.075;
 
-            Impulse(image);
+            Impulse(example.Input);
 
             for (int j = 0; j < Layers[Layers.Length - 1].Length; j++)
-                Layers[Layers.Length - 1][j].Delta = (t == j ? 1.0 : 0.0) - Layers[Layers.Length - 1][j].Output;
+                Layers[Layers.Length - 1][j].Delta = example.Output[j] - Layers[Layers.Length - 1][j].Output;
 
             for (int i = Layers.Length - 2; i >= 0; i--)
                 for (int j = 0; j < Layers[i].Length; j++)

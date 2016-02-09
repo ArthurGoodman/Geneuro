@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 
 namespace geneuro {
     class Program {
@@ -48,7 +49,7 @@ namespace geneuro {
 
                     net = new Perceptron();
                     net.Load(Settings.Instance.NetworkFileName);
-                    net.Learn(dataDirectoryPath);
+                    net.Learn(TrainingSet.Load(dataDirectoryPath));
                     net.Save(Settings.Instance.NetworkFileName);
                     break;
 
@@ -60,7 +61,16 @@ namespace geneuro {
 
                     net = new Perceptron();
                     net.Load(Settings.Instance.NetworkFileName);
-                    Console.WriteLine(net.Classify(imagePath));
+                    Console.WriteLine(net.Classify(ImageLoader.LoadImage((Bitmap)Image.FromFile(imagePath))));
+                    break;
+
+                case "/inspect":
+                    if (args.Length != 1)
+                        InvalidArguments();
+                    
+                    net = new Perceptron();
+                    net.Load(Settings.Instance.NetworkFileName);
+                    Console.WriteLine(net.ToString());
                     break;
 
                 default:
