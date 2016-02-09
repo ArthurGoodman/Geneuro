@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace geneuro {
     class Perceptron : INeuralNetwork {
@@ -97,15 +98,14 @@ namespace geneuro {
                 Layers[Layers.Length - 1][j].Delta = example.Output[j] - Layers[Layers.Length - 1][j].Output;
 
             for (int i = Layers.Length - 2; i >= 0; i--)
-                for (int j = 0; j < Layers[i].Length; j++)
+                Parallel.For(0, Layers[i].Length, j => {
                     Layers[i][j].Delta = Layers[i][j].DeltaSum();
 
-            for (int i = Layers.Length - 2; i >= 0; i--)
-                for (int j = 0; j < Layers[i].Length; j++)
                     for (int c = 0; c < Layers[i][j].Weights.Length; c++) {
                         Layers[i][j].DeltaWeights[c] = alpha * Layers[i][j].DeltaWeights[c] + (1.0 - alpha) * learningRate * Layers[i + 1][c].Delta * Layers[i][j].Output;
                         Layers[i][j].Weights[c] += Layers[i][j].DeltaWeights[c];
                     }
+                });
 
             double error = 0;
 

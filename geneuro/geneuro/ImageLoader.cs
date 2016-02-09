@@ -6,12 +6,11 @@ namespace geneuro {
             Bitmap image = (Bitmap)Image.FromFile(fileName);
 
             double[] data = new double[image.Width * image.Height];
-
-            for (int y = 0; y < image.Height; y++)
-                for (int x = 0; x < image.Width; x++) {
-                    Color color = image.GetPixel(x, y);
-                    data[x + x * y] = 1.0 - (double)(color.R + color.G + color.B) / 3 / 255;
-                }
+            
+            for (int i = 0; i < data.Length; i++) {
+                Color color = image.GetPixel(i % image.Width, i / image.Width);
+                data[i] = 1.0 - (double)(color.R + color.G + color.B) / 3 / 255;
+            }
 
             return data;
         }
