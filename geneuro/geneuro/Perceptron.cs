@@ -5,7 +5,7 @@ using System.IO;
 namespace geneuro {
     class Perceptron : INeuralNetwork {
         private Random random = new Random();
-        private double learningRate = 1.0 / 40;
+        private double learningRate;
 
         public Neuron[][] Layers { get; private set; }
 
@@ -71,14 +71,14 @@ namespace geneuro {
         }
 
         public void Learn(string dataDirectoryPath) {
-            const int maxNumberOfSteps = 1000;
-            const double maxError = 1e-3;
-
-            learningRate = 1.0 / Directory.GetFiles(dataDirectoryPath, "*", SearchOption.AllDirectories).Length;
+            if (Settings.Instance.UseCustomLearningRate)
+                learningRate = Settings.Instance.LearningRate;
+            else
+                learningRate = 1.0 / Directory.GetFiles(dataDirectoryPath, "*", SearchOption.AllDirectories).Length;
 
             DirectoryInfo[] dirs = new DirectoryInfo(dataDirectoryPath).GetDirectories();
 
-            for (int step = 0; step < maxNumberOfSteps; step++) {
+            for (int step = 0; step < Settings.Instance.MaxLearningSteps; step++) {
                 int t = 0;
 
                 double totalError = 0;
@@ -94,7 +94,7 @@ namespace geneuro {
 
                 Console.WriteLine(step + ": " + totalError);
 
-                if (totalError <= maxError)
+                if (totalError <= Settings.Instance.MaxError)
                     break;
             }
         }

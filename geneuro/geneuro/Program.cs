@@ -2,10 +2,9 @@
 
 namespace geneuro {
     class Program {
-        private static string networkFilePath = "network";
-
         static void Main(string[] args) {
             try {
+                Settings.Load();
                 Run(args);
             } catch (Exception e) {
                 Console.WriteLine(e.Message);
@@ -38,7 +37,7 @@ namespace geneuro {
                         layersSizes[i] = int.Parse(args[i + 1]);
 
                     net = new Perceptron(layersSizes);
-                    net.Save(networkFilePath);
+                    net.Save(Settings.Instance.NetworkFileName);
                     break;
 
                 case "/learn":
@@ -48,9 +47,9 @@ namespace geneuro {
                     string dataDirectoryPath = args[1];
 
                     net = new Perceptron();
-                    net.Load(networkFilePath);
+                    net.Load(Settings.Instance.NetworkFileName);
                     net.Learn(dataDirectoryPath);
-                    net.Save(networkFilePath);
+                    net.Save(Settings.Instance.NetworkFileName);
                     break;
 
                 case "/classify":
@@ -60,7 +59,7 @@ namespace geneuro {
                     string imagePath = args[1];
 
                     net = new Perceptron();
-                    net.Load(networkFilePath);
+                    net.Load(Settings.Instance.NetworkFileName);
                     Console.WriteLine(net.Classify(imagePath));
                     break;
 

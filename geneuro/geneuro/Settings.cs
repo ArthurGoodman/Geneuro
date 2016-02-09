@@ -1,29 +1,34 @@
 ﻿using System.IO;
+using System.Reflection;
 using System.Xml.Serialization;
 
-namespace generator {
+namespace geneuro {
     public class Settings {
         public static Settings Instance { get; set; }
 
         static string SettingsFile = "settings.xml";
 
-        [XmlElement("Width")]
-        public int Width { get; set; }
+        [XmlElement("NetworkFileName")]
+        public string NetworkFileName { get; set; }
 
-        [XmlElement("Height")]
-        public int Height { get; set; }
+        [XmlElement("UseCustomLearningRate")]
+        public bool UseCustomLearningRate { get; set; }
 
-        [XmlElement("Fonts")]
-        public string FontsFile { get; set; }
+        [XmlElement("LearningRate")]
+        public double LearningRate { get; set; }
 
-        [XmlElement("Output")]
-        public string OutputDir { get; set; }
+        [XmlElement("MaxError")]
+        public double MaxError { get; set; }
+
+        [XmlElement("MaxLearningSteps")]
+        public int MaxLearningSteps { get; set; }
 
         public Settings() {
-            Width = 50;
-            Height = 50;
-            FontsFile = "fonts.txt";
-            OutputDir = "out";
+            NetworkFileName = "network";
+            UseCustomLearningRate = false;
+            LearningRate = 0.1;
+            MaxError = 1e-3;
+            MaxLearningSteps = 1000;
         }
 
         public static void Load() {
