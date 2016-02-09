@@ -1,5 +1,5 @@
 @echo off
-bin\Release\geneuro.exe /create 300 600 10
+bin\Release\geneuro /create 300 600 10
 bin\Release\geneuro /learn data
 echo.
 bin\Release\geneuro /classify tests\0.bmp

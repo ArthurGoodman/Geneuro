@@ -6,7 +6,6 @@ namespace generator {
         private char firstChar;
         private char lastChar;
         private string[] fonts;
-        private int[] sizes;
 
         public Generator(char first, char last) {
             firstChar = first;
@@ -16,22 +15,25 @@ namespace generator {
         }
 
         private void LoadFonts(string fileName) {
-            string[] lines = File.ReadAllLines(fileName);
-            fonts = new string[lines.Length];
-            sizes = new int[lines.Length];
-            int i = 0;
+            fonts = File.ReadAllLines(fileName);
+        }
 
-            foreach (string line in lines) {
-                if (line.Length == 0)
-                    continue;
+        private Font GetAdjustedFont(Graphics g, Font font, Size room) {
+            const float bias = 10;
 
-                int index = line.LastIndexOf(' ');
+            float size = font.Size;
+            float lowSize = 0, highSize = 100;
 
-                fonts[i] = line.Substring(0, index);
-                sizes[i] = int.Parse(line.Substring(index + 1));
+            for (int i = 0; i < 10; i++) {
+                font = new Font(font.Name, (lowSize + highSize) / 2, font.Style);
 
-                i++;
+                if (font.GetHeight(g) > room.Height + bias)
+                    highSize = (lowSize + highSize) / 2;
+                else
+                    lowSize = (lowSize + highSize) / 2;
             }
+
+            return font;
         }
 
         public void Generate() {
@@ -50,16 +52,23 @@ namespace generator {
             format.Alignment = StringAlignment.Center;
             format.LineAlignment = StringAlignment.Center;
 
+            Bitmap image = new Bitmap(Settings.Instance.Width, Settings.Instance.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+
+            Graphics g = Graphics.FromImage(image);
+            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+
+            RectangleF layoutRectangle = new RectangleF(0, 0, image.Width, image.Height);
+
+            const float offset = 4;
+            RectangleF expandedRectangle = new RectangleF(0, 0, image.Width, image.Height + offset);
+            
             for (int i = 0; i < fonts.Length; i++) {
-                Font font = new Font(fonts[i], sizes[i]);
+                Font font = GetAdjustedFont(g, new Font(fonts[i], 10), image.Size);
 
                 for (char c = firstChar; c <= lastChar; c++) {
-                    Bitmap image = new Bitmap(Settings.Instance.Width, Settings.Instance.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 
-                    Graphics g = Graphics.FromImage(image);
-                    g.FillRectangle(whiteBrush, 0, 0, Settings.Instance.Width, Settings.Instance.Height);
-                    g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-                    g.DrawString(c.ToString(), font, blackBrush, Settings.Instance.Width / 2, Settings.Instance.Height / 2, format);
+                    g.FillRectangle(whiteBrush, layoutRectangle);
+                    g.DrawString(c.ToString(), font, blackBrush, expandedRectangle, format);
 
                     image.Save(Settings.Instance.OutputDir + "/" + c + "/" + i + ".bmp");
                 }
