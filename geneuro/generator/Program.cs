@@ -26,7 +26,7 @@ namespace generator {
                     Console.WriteLine("/? or /help");
                     Console.WriteLine("/size <int> <int>");
                     Console.WriteLine("/fonts <file_path>");
-                    Console.WriteLine("    fonts file format: (<font_name> <em_size> \\n)*");
+                    Console.WriteLine("    fonts file format: (<font_name> \\n)*");
                     Console.WriteLine("/output <directory_path>");
                     Console.WriteLine("/generate <first_character> <last_character>");
                     break;

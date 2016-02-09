@@ -72,7 +72,7 @@ namespace geneuro {
 
         public void Learn(string dataDirectoryPath) {
             const int maxNumberOfSteps = 1000;
-            const double maxError = 0.5e-3;
+            const double maxError = 1e-3;
 
             learningRate = 1.0 / Directory.GetFiles(dataDirectoryPath, "*", SearchOption.AllDirectories).Length;
 
@@ -81,20 +81,20 @@ namespace geneuro {
             for (int step = 0; step < maxNumberOfSteps; step++) {
                 int t = 0;
 
-                double currentError = 0;
+                double totalError = 0;
 
                 foreach (DirectoryInfo dir in dirs) {
                     FileInfo[] files = dir.GetFiles();
 
                     foreach (FileInfo file in files)
-                        currentError += LearnFile((Bitmap)Image.FromFile(file.FullName), t);
+                        totalError += LearnFile((Bitmap)Image.FromFile(file.FullName), t);
 
                     t++;
                 }
 
-                Console.WriteLine(step + ": " + currentError);
+                Console.WriteLine(step + ": " + totalError);
 
-                if (currentError <= maxError)
+                if (totalError <= maxError)
                     break;
             }
         }
@@ -118,12 +118,12 @@ namespace geneuro {
                         Layers[i][j].Weights[c] += Layers[i][j].DeltaWeights[c];
                     }
 
-            double averageError = 0;
+            double error = 0;
 
             for (int j = 0; j < Layers[Layers.Length - 1].Length; j++)
-                averageError += Layers[Layers.Length - 1][j].Delta * Layers[Layers.Length - 1][j].Delta / 2;
+                error += Layers[Layers.Length - 1][j].Delta * Layers[Layers.Length - 1][j].Delta;
 
-            return averageError;
+            return error;
         }
 
         public void Load(string filePath) {
