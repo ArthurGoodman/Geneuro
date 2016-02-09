@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 
@@ -20,7 +19,7 @@ namespace geneuro {
                 FileInfo[] files = dir.GetFiles();
 
                 foreach (FileInfo file in files)
-                    examples[index++] = new Example((Bitmap)Image.FromFile(file.FullName), dirs.Length, targetIndex);
+                    examples[index++] = new Example(ImageLoader.LoadImage(file.FullName), dirs.Length, targetIndex);
 
                 targetIndex++;
             }

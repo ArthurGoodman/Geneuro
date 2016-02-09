@@ -83,6 +83,8 @@ namespace geneuro {
 
                 if (totalError <= Settings.Instance.MaxError)
                     break;
+
+                trainingSet.Shuffle(random);
             }
         }
 
