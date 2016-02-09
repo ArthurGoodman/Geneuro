@@ -69,7 +69,7 @@ namespace geneuro {
 
                     net = new Perceptron();
                     net.Load(Settings.Instance.NetworkFileName);
-                    Console.WriteLine(net.ToString());
+                    Console.WriteLine(net.Inspect());
                     break;
 
                 default:

@@ -5,5 +5,7 @@
 
         void Save(string filePath);
         void Load(string filePath);
+
+        string Inspect();
     }
 }

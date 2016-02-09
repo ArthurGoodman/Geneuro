@@ -159,5 +159,14 @@ namespace geneuro {
 
             stream.Close();
         }
+
+        public string Inspect() {
+            string info = "";
+
+            foreach (Neuron[] layer in Layers)
+                info += layer.Length + " ";
+
+            return info;
+        }
     }
 }
