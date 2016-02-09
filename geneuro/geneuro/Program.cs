@@ -37,6 +37,7 @@ namespace geneuro {
                         layersSizes[i] = int.Parse(args[i + 1]);
 
                     net = new Perceptron(layersSizes);
+                    net.Initialize();
                     net.Save(Settings.Instance.NetworkFileName);
                     break;
 

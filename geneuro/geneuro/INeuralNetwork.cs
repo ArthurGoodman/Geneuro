@@ -1,5 +1,7 @@
 ﻿namespace geneuro {
     interface INeuralNetwork {
+        void Initialize();
+
         void Learn(TrainingSet trainingSet);
         int Classify(double[] input);
 

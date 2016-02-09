@@ -47,6 +47,7 @@
     <Compile Include="ImageLoader.cs" />
     <Compile Include="Example.cs" />
     <Compile Include="INeuralNetwork.cs" />
+    <Compile Include="Layer.cs" />
     <Compile Include="Neuron.cs" />
     <Compile Include="Perceptron.cs" />
     <Compile Include="Program.cs" />
