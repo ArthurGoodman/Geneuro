@@ -5,6 +5,7 @@ using System.IO;
 namespace geneuro {
     class Perceptron : INeuralNetwork {
         private Random random = new Random();
+        private double learningRate = 1.0 / 40;
 
         public Neuron[][] Layers { get; private set; }
 
@@ -71,38 +72,34 @@ namespace geneuro {
 
         public void Learn(string dataDirectoryPath) {
             const int maxNumberOfSteps = 1000;
-            const double maxError = 1e-5;
+            const double maxError = 0.5e-3;
+
+            learningRate = 1.0 / Directory.GetFiles(dataDirectoryPath, "*", SearchOption.AllDirectories).Length;
 
             DirectoryInfo[] dirs = new DirectoryInfo(dataDirectoryPath).GetDirectories();
 
             for (int step = 0; step < maxNumberOfSteps; step++) {
                 int t = 0;
 
-                double averageTotalError = 0;
-                int count = 0;
+                double currentError = 0;
 
                 foreach (DirectoryInfo dir in dirs) {
                     FileInfo[] files = dir.GetFiles();
 
-                    foreach (FileInfo file in files) {
-                        averageTotalError += LearnFile((Bitmap)Image.FromFile(file.FullName), t);
-                        count++;
-                    }
+                    foreach (FileInfo file in files)
+                        currentError += LearnFile((Bitmap)Image.FromFile(file.FullName), t);
 
                     t++;
                 }
 
-                averageTotalError /= count;
+                Console.WriteLine(step + ": " + currentError);
 
-                Console.WriteLine(step + ": " + averageTotalError);
-
-                if (Math.Abs(averageTotalError) <= maxError)
+                if (currentError <= maxError)
                     break;
             }
         }
 
         private double LearnFile(Bitmap image, int t) {
-            const double eta = 0.1;
             const double alpha = 0.075;
 
             Impulse(image);
@@ -117,16 +114,14 @@ namespace geneuro {
             for (int i = Layers.Length - 2; i >= 0; i--)
                 for (int j = 0; j < Layers[i].Length; j++)
                     for (int c = 0; c < Layers[i][j].Weights.Length; c++) {
-                        Layers[i][j].DeltaWeights[c] = alpha * Layers[i][j].DeltaWeights[c] + (1.0 - alpha) * eta * Layers[i + 1][c].Delta * Layers[i][j].Output;
+                        Layers[i][j].DeltaWeights[c] = alpha * Layers[i][j].DeltaWeights[c] + (1.0 - alpha) * learningRate * Layers[i + 1][c].Delta * Layers[i][j].Output;
                         Layers[i][j].Weights[c] += Layers[i][j].DeltaWeights[c];
                     }
 
             double averageError = 0;
 
             for (int j = 0; j < Layers[Layers.Length - 1].Length; j++)
-                averageError += Layers[Layers.Length - 1][j].Delta;
-
-            averageError /= Layers[Layers.Length - 1].Length;
+                averageError += Layers[Layers.Length - 1][j].Delta * Layers[Layers.Length - 1][j].Delta / 2;
 
             return averageError;
         }
