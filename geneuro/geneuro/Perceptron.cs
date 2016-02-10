@@ -25,17 +25,7 @@ namespace geneuro {
 
         public int Classify(double[] input) {
             Impulse(input);
-
-            int maxIndex = 0;
-            double maxValue = -1;
-
-            for (int j = 0; j < layers[layers.Length - 1].Length; j++)
-                if (layers[layers.Length - 1][j].Value > maxValue) {
-                    maxValue = layers[layers.Length - 1][j].Value;
-                    maxIndex = j;
-                }
-
-            return maxIndex;
+            return layers[layers.Length - 1].MaxIndex();
         }
 
         private void Impulse(double[] input) {
@@ -55,14 +45,14 @@ namespace geneuro {
                 LearningRate = 1.0 / trainingSet.Size();
 
             for (int step = 0; step < Settings.Instance.MaxLearningSteps; step++) {
-                double totalError = 0;
+                double maxError = 0;
 
                 foreach (Example example in trainingSet)
-                    totalError += LearnExample(example);
+                    maxError = Math.Max(maxError, LearnExample(example));
 
-                Console.WriteLine(step + ": " + totalError);
+                Console.WriteLine(step + ": " + maxError);
 
-                if (totalError <= Settings.Instance.MaxError)
+                if (maxError <= Settings.Instance.MaxError)
                     break;
 
                 trainingSet.Shuffle(random);

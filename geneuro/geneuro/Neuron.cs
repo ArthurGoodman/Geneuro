@@ -16,31 +16,37 @@ namespace geneuro {
         }
 
         public void Initialize(Random random) {
-            if (Weights != null)
-                for (int i = 0; i < Weights.Length; i++)
-                    Weights[i] = random.NextDouble();
+            for (int i = 0; i < Weights.Length; i++)
+                Weights[i] = random.NextDouble();
         }
 
         public void Load(BinaryReader reader) {
-            if (Weights != null)
-                for (int i = 0; i < Weights.Length; i++)
-                    Weights[i] = reader.ReadDouble();
+            for (int i = 0; i < Weights.Length; i++)
+                Weights[i] = reader.ReadDouble();
         }
 
         public void Save(BinaryWriter writer) {
-            if (Weights != null)
-                for (int i = 0; i < Weights.Length; i++)
-                    writer.Write(Weights[i]);
+            for (int i = 0; i < Weights.Length; i++)
+                writer.Write(Weights[i]);
         }
 
-        public void ForwardPropagate(Layer layer) {
+        public void ForwardPropagate(Layer nextLayer) {
             for (int c = 0; c < Weights.Length; c++)
-                layer.Neurons[c].Value += Value * Weights[c];
+                nextLayer[c].Value += Value * Weights[c];
         }
 
-        public void BackPropagate(Layer layer) {
+        public void BackPropagate(Layer nextLayer) {
             for (int c = 0; c < Weights.Length; c++)
-                Delta += layer.Neurons[c].Delta * Weights[c];
+                Delta += nextLayer[c].Delta * Weights[c];
+        }
+
+        public void Adjust(Layer nextLayer) {
+            const double alpha = 0.075;
+
+            for (int c = 0; c < Weights.Length; c++) {
+                DeltaWeights[c] = alpha * DeltaWeights[c] + (1.0 - alpha) * Perceptron.LearningRate * nextLayer.Neurons[c].Delta * Value;
+                Weights[c] += DeltaWeights[c];
+            }
         }
     }
 }

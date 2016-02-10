@@ -24,7 +24,7 @@ namespace geneuro {
             Neurons = new Neuron[size];
             this.next = next;
 
-            for (int j = 0; j < Neurons.Length; j++) {
+            for (int j = 0; j < Length; j++) {
                 Neurons[j] = new Neuron();
 
                 if (next != null) {
@@ -40,27 +40,30 @@ namespace geneuro {
         }
 
         public void Initialize(Random random) {
-            foreach (Neuron neuron in Neurons)
-                neuron.Initialize(random);
+            if (next != null)
+                foreach (Neuron neuron in Neurons)
+                    neuron.Initialize(random);
         }
 
         public void Load(BinaryReader reader) {
-            foreach (Neuron neuron in Neurons)
-                neuron.Load(reader);
+            if (next != null)
+                foreach (Neuron neuron in Neurons)
+                    neuron.Load(reader);
         }
 
         public void Save(BinaryWriter writer) {
-            foreach (Neuron neuron in Neurons)
-                neuron.Save(writer);
+            if (next != null)
+                foreach (Neuron neuron in Neurons)
+                    neuron.Save(writer);
         }
 
         public void Assign(double[] input) {
-            for (int j = 0; j < Neurons.Length; j++)
+            for (int j = 0; j < Length; j++)
                 Neurons[j].Value = input[j];
         }
 
         public void Diff(double[] output) {
-            for (int j = 0; j < Neurons.Length; j++)
+            for (int j = 0; j < Length; j++)
                 Neurons[j].Delta = output[j] - Neurons[j].Value;
         }
 
@@ -69,33 +72,40 @@ namespace geneuro {
         }
 
         public void ForwardPropagate() {
-            for (int j = 0; j < Neurons.Length; j++)
+            for (int j = 0; j < Length; j++)
                 Neurons[j].ForwardPropagate(next);
 
-            for (int j = 0; j < next.Neurons.Length; j++)
+            for (int j = 0; j < next.Length; j++)
                 next[j].Value = Sigmoid(next[j].Value);
         }
 
         public void BackPropagate() {
-            const double alpha = 0.075;
-
-            Parallel.For(0, Neurons.Length, j => {
+            Parallel.For(0, Length, j => {
                 Neurons[j].BackPropagate(next);
-
-                for (int c = 0; c < Neurons[j].Weights.Length; c++) {
-                    Neurons[j].DeltaWeights[c] = alpha * Neurons[j].DeltaWeights[c] + (1.0 - alpha) * Perceptron.LearningRate * next.Neurons[c].Delta * Neurons[j].Value;
-                    Neurons[j].Weights[c] += Neurons[j].DeltaWeights[c];
-                }
+                Neurons[j].Adjust(next);
             });
         }
 
         public double Error() {
             double error = 0;
 
-            for (int j = 0; j < Neurons.Length; j++)
+            for (int j = 0; j < Length; j++)
                 error += Neurons[j].Delta * Neurons[j].Delta;
 
             return error;
+        }
+
+        public int MaxIndex() {
+            int maxIndex = 0;
+            double maxValue = 0;
+
+            for (int j = 0; j < Length; j++)
+                if (Neurons[j].Value > maxValue) {
+                    maxValue = Neurons[j].Value;
+                    maxIndex = j;
+                }
+
+            return maxIndex;
         }
     }
 }
