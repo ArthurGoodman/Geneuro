@@ -63,8 +63,10 @@ namespace geneuro {
         }
 
         public void Diff(double[] output) {
-            for (int j = 0; j < Length; j++)
-                Neurons[j].Delta = output[j] - Neurons[j].Value;
+            for (int j = 0; j < Length; j++) {
+                double delta = output[j] - Neurons[j].Value;
+                Neurons[j].Delta = Math.Sign(delta) * delta * delta;
+            }
         }
 
         private double Sigmoid(double t) {
