@@ -27,6 +27,22 @@ namespace geneuro {
                     Console.WriteLine("This is help.");
                     break;
 
+                case "/data":
+                    if (args.Length != 2)
+                        InvalidArguments();
+
+                    Settings.Instance.DataDirectoryPath = args[1];
+                    Settings.Save();
+                    break;
+
+                case "/tests":
+                    if (args.Length != 2)
+                        InvalidArguments();
+                    
+                    Settings.Instance.TestsDirectoryPath = args[1];
+                    Settings.Save();
+                    break;
+
                 case "/create":
                     if (args.Length < 2)
                         InvalidArguments();
@@ -42,14 +58,12 @@ namespace geneuro {
                     break;
 
                 case "/learn":
-                    if (args.Length != 2)
+                    if (args.Length != 1)
                         InvalidArguments();
-
-                    string dataDirectoryPath = args[1];
 
                     net = new Perceptron();
                     net.Load(Settings.Instance.NetworkFileName);
-                    net.Learn(TrainingSet.Load(dataDirectoryPath));
+                    net.Learn(TrainingSet.Load(Settings.Instance.DataDirectoryPath));
                     net.Save(Settings.Instance.NetworkFileName);
                     break;
 

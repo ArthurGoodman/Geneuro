@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Xml.Serialization;
 
 namespace geneuro {
@@ -9,6 +10,12 @@ namespace geneuro {
 
         [XmlElement("NetworkFileName")]
         public string NetworkFileName { get; set; }
+
+        [XmlElement("DataDirectoryName")]
+        public string DataDirectoryPath { get; set; }
+
+        [XmlElement("TestsDirectoryName")]
+        public string TestsDirectoryPath { get; set; }
 
         [XmlElement("UseCustomLearningRate")]
         public bool UseCustomLearningRate { get; set; }
@@ -24,6 +31,8 @@ namespace geneuro {
 
         public Settings() {
             NetworkFileName = "network";
+            DataDirectoryPath = "data";
+            TestsDirectoryPath = "tests";
             UseCustomLearningRate = false;
             LearningRate = 0.1;
             MaxError = 1e-3;
@@ -46,6 +55,8 @@ namespace geneuro {
             stream = File.OpenWrite(SettingsFile);
             serializer.Serialize(stream, Instance);
             stream.Close();
+
+            Instance.ExpandEnvironmentVariables();
         }
 
         public static void Save() {
@@ -54,6 +65,11 @@ namespace geneuro {
             Stream stream = File.OpenWrite(SettingsFile);
             serializer.Serialize(stream, Instance);
             stream.Close();
+        }
+
+        private void ExpandEnvironmentVariables() {
+            DataDirectoryPath = Environment.ExpandEnvironmentVariables(DataDirectoryPath);
+            TestsDirectoryPath = Environment.ExpandEnvironmentVariables(TestsDirectoryPath);
         }
     }
 }
