@@ -38,25 +38,30 @@ namespace geneuro {
                 layers[i].ForwardPropagate();
         }
 
-        public void Learn(TrainingSet trainingSet) {
+        public double Learn(TrainingSet trainingSet, bool verbose = true) {
             if (Settings.Instance.UseCustomLearningRate)
                 LearningRate = Settings.Instance.LearningRate;
             else
                 LearningRate = 1.0 / trainingSet.Size();
 
+            double maxError = 0;
+
             for (int step = 0; step < Settings.Instance.MaxLearningSteps; step++) {
-                double maxError = 0;
+                maxError = 0;
 
                 foreach (Example example in trainingSet)
                     maxError = Math.Max(maxError, LearnExample(example));
 
-                Console.WriteLine(step + ": " + maxError);
+                if (verbose)
+                    Console.WriteLine(step + ": " + maxError);
 
                 if (maxError <= Settings.Instance.MaxError)
                     break;
 
                 trainingSet.Shuffle(random);
             }
+
+            return maxError;
         }
 
         private double LearnExample(Example example) {
@@ -66,6 +71,28 @@ namespace geneuro {
 
             for (int i = layers.Length - 2; i >= 0; i--)
                 layers[i].BackPropagate();
+
+            return layers[layers.Length - 1].Error();
+        }
+
+        public double Test(TrainingSet trainingSet) {
+            if (Settings.Instance.UseCustomLearningRate)
+                LearningRate = Settings.Instance.LearningRate;
+            else
+                LearningRate = 1.0 / trainingSet.Size();
+
+            double maxError = 0;
+
+            foreach (Example example in trainingSet)
+                maxError = Math.Max(maxError, TestExample(example));
+
+            return maxError;
+        }
+
+        private double TestExample(Example example) {
+            Impulse(example.Input);
+
+            layers[layers.Length - 1].Diff(example.Output);
 
             return layers[layers.Length - 1].Error();
         }

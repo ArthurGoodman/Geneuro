@@ -2,7 +2,8 @@
     interface INeuralNetwork {
         void Initialize();
 
-        void Learn(TrainingSet trainingSet);
+        double Learn(TrainingSet trainingSet, bool verbose = true);
+        double Test(TrainingSet trainingSet);
         int Classify(double[] input);
 
         void Save(string filePath);

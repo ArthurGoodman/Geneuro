@@ -38,8 +38,16 @@ namespace geneuro {
                 case "/tests":
                     if (args.Length != 2)
                         InvalidArguments();
-                    
+
                     Settings.Instance.TestsDirectoryPath = args[1];
+                    Settings.Save();
+                    break;
+
+                case "/rate":
+                    if (args.Length != 2)
+                        InvalidArguments();
+
+                    Settings.Instance.LearningRate = double.Parse(args[1]);
                     Settings.Save();
                     break;
 
@@ -76,6 +84,13 @@ namespace geneuro {
                     net = new Perceptron();
                     net.Load(Settings.Instance.NetworkFileName);
                     Console.WriteLine(net.Classify(ImageLoader.LoadImage(imagePath)));
+                    break;
+
+                case "/optimize":
+                    Genetics genetics = new Genetics();
+                    net = genetics.Optimize();
+                    net.Save(Settings.Instance.NetworkFileName);
+                    Settings.Save();
                     break;
 
                 case "/inspect":

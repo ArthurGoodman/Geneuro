@@ -6,53 +6,54 @@ namespace geneuro {
     public class Settings {
         public static Settings Instance { get; set; }
 
-        static string SettingsFile = "settings.xml";
+        private static string settingsFile = "settings.xml";
 
-        [XmlElement("NetworkFileName")]
         public string NetworkFileName { get; set; }
-
-        [XmlElement("DataDirectoryName")]
         public string DataDirectoryPath { get; set; }
-
-        [XmlElement("TestsDirectoryName")]
         public string TestsDirectoryPath { get; set; }
 
-        [XmlElement("UseCustomLearningRate")]
         public bool UseCustomLearningRate { get; set; }
-
-        [XmlElement("LearningRate")]
         public double LearningRate { get; set; }
 
-        [XmlElement("MaxError")]
         public double MaxError { get; set; }
-
-        [XmlElement("MaxLearningSteps")]
         public int MaxLearningSteps { get; set; }
+
+        public int PopulationSize { get; set; }
+        public int EvolutionEpochs { get; set; }
+        public Range HiddenLayersCountRange { get; set; }
+        public Range HiddenLayerSizeRange { get; set; }
 
         public Settings() {
             NetworkFileName = "network";
             DataDirectoryPath = "data";
             TestsDirectoryPath = "tests";
-            UseCustomLearningRate = false;
+
+            UseCustomLearningRate = true;
             LearningRate = 0.1;
+
             MaxError = 1e-3;
-            MaxLearningSteps = 1000;
+            MaxLearningSteps = 300;
+
+            PopulationSize = 10;
+            EvolutionEpochs = 100;
+            HiddenLayersCountRange = new Range(0, 1);
+            HiddenLayerSizeRange = new Range(10, 300);
         }
 
         public static void Load() {
             XmlSerializer serializer = new XmlSerializer(typeof(Settings));
             Stream stream;
 
-            if (File.Exists(SettingsFile)) {
-                stream = File.OpenRead(SettingsFile);
+            if (File.Exists(settingsFile)) {
+                stream = File.OpenRead(settingsFile);
                 Instance = (Settings)serializer.Deserialize(stream);
                 stream.Close();
             } else
                 Instance = new Settings();
 
-            File.Delete(SettingsFile);
+            File.Delete(settingsFile);
 
-            stream = File.OpenWrite(SettingsFile);
+            stream = File.OpenWrite(settingsFile);
             serializer.Serialize(stream, Instance);
             stream.Close();
 
@@ -60,9 +61,12 @@ namespace geneuro {
         }
 
         public static void Save() {
+            if (File.Exists(settingsFile))
+                File.Delete(settingsFile);
+
             XmlSerializer serializer = new XmlSerializer(typeof(Settings));
 
-            Stream stream = File.OpenWrite(SettingsFile);
+            Stream stream = File.OpenWrite(settingsFile);
             serializer.Serialize(stream, Instance);
             stream.Close();
         }
