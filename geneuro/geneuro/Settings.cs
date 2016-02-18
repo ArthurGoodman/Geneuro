@@ -34,7 +34,7 @@ namespace geneuro {
             MaxError = 1e-3;
             MaxLearningSteps = 300;
 
-            PopulationSize = 10;
+            PopulationSize = 64;
             EvolutionEpochs = 100;
             HiddenLayersCountRange = new Range(0, 1);
             HiddenLayerSizeRange = new Range(10, 300);
