@@ -1,15 +1,19 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 
 namespace geneuro {
     class Genetics {
         private Random random = new Random();
+        public static DateTime Today { get; }
 
         private Chromosome[] population;
         private Chromosome[] parents;
 
         private TrainingSet data;
         private TrainingSet tests;
+
+        private string lines = null;
 
         public Perceptron Optimize() {
             Settings.Instance.UseCustomLearningRate = true;
@@ -20,7 +24,9 @@ namespace geneuro {
             Initialize();
 
             Evaluation();
-            Console.WriteLine(-1 + " > best: " + population.First().Instance.Inspect() + "; " + population.First().LearningRate + "\n");
+            string info = -1 + " > best: " + population.First().Instance.Inspect() + "; " + population.First().LearningRate + "\n";
+            Console.WriteLine(info);
+            lines += info + "\n";
 
             for (int i = 0; i < Settings.Instance.EvolutionEpochs; i++) {
                 Selection();
@@ -29,9 +35,17 @@ namespace geneuro {
                 Evaluation();
 
                 population = population.OrderBy(c => c.Unfitness).ToArray();
-                
-                Console.WriteLine(i + " > best: " + population.First().Instance.Inspect() + "; " + population.First().LearningRate + "\n");
+
+                info = i + " > best: " + population.First().Instance.Inspect() + "; " + population.First().LearningRate + "\n";
+
+                Console.WriteLine(info);
+                lines += info + "\n";
             }
+
+            StreamWriter file = new StreamWriter(DateTime.Now.ToString("dd MMMM yyyy HH-mm-ss") + ".txt");
+            file.WriteLine(lines);
+
+            file.Close();
 
             return population.First().Instance;
         }
@@ -50,7 +64,9 @@ namespace geneuro {
 
             foreach (Chromosome chromosome in population) {
                 chromosome.Evaluate(data, tests);
-                Console.WriteLine(i++ + ": " + chromosome.Instance.Inspect() + "; " + chromosome.LearningRate + " : " + chromosome.Unfitness);
+                string info = i++ + ": " + chromosome.Instance.Inspect() + "; " + chromosome.LearningRate + " : " + chromosome.Unfitness;
+                Console.WriteLine(info);
+                lines += info + "\n";
             }
         }
 
