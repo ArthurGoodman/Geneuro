@@ -49,7 +49,7 @@ namespace geneuro {
 
             return population.First().Instance;
         }
-
+    
         private void Initialize() {
             population = new Chromosome[Settings.Instance.PopulationSize];
 

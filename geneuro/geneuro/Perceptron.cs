@@ -7,6 +7,7 @@ namespace geneuro {
 
         private Random random = new Random();
         private Layer[] layers;
+        private string lines = null;
 
         public Perceptron() {
         }

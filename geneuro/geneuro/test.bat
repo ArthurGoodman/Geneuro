@@ -1,7 +1,7 @@
 @echo off
-rem bin\Release\geneuro /create 300 600 10
-rem bin\Release\geneuro /learn
-rem echo.
+bin\Release\geneuro /create 300 600 10
+bin\Release\geneuro /learn
+echo.
 bin\Release\geneuro /classify tests\0\0.bmp
 bin\Release\geneuro /classify tests\1\1.bmp
 bin\Release\geneuro /classify tests\2\2.bmp
