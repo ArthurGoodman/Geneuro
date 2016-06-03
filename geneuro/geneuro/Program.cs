@@ -1,15 +1,23 @@
 ﻿using System;
+using System.Windows.Forms;
 
 namespace geneuro {
     class Program {
+        [STAThread]
         static void Main(string[] args) {
-            try {
-                Settings.Load();
-                Run(args);
-            } catch (Exception e) {
-                Console.WriteLine(e.Message);
-            }
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainForm());
         }
+
+        //static void Main(string[] args) {
+        //    try {
+        //        Settings.Load();
+        //        Run(args);
+        //    } catch (Exception e) {
+        //        Console.WriteLine(e.Message);
+        //    }
+        //}
 
         private static void InvalidArguments() {
             throw new Exception("error: invalid arguments");
