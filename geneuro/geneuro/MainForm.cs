@@ -55,5 +55,14 @@ namespace geneuro {
         private void clearButton_Click(object sender, EventArgs e) {
             console.Clear();
         }
+
+        private void saveButton_Click(object sender, EventArgs e) {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.InitialDirectory = Directory.GetCurrentDirectory();
+            dlg.Filter = "Text files (*.txt)|*.txt";
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+                File.WriteAllText(dlg.FileName, console.Text);
+        }
     }
 }

@@ -13,8 +13,6 @@ namespace geneuro {
         private TrainingSet data;
         private TrainingSet tests;
 
-        private string lines = null;
-
         public Perceptron Optimize() {
             Settings.Instance.UseCustomLearningRate = true;
 
@@ -24,9 +22,9 @@ namespace geneuro {
             Initialize();
 
             Evaluation();
+
             string info = -1 + " > best: " + population.First().Instance.Inspect() + "; " + population.First().LearningRate + "\n";
             Console.WriteLine(info);
-            lines += info + "\n";
 
             for (int i = 0; i < Settings.Instance.EvolutionEpochs; i++) {
                 Selection();
@@ -39,13 +37,7 @@ namespace geneuro {
                 info = i + " > best: " + population.First().Instance.Inspect() + "; " + population.First().LearningRate + "\n";
 
                 Console.WriteLine(info);
-                lines += info + "\n";
             }
-
-            StreamWriter file = new StreamWriter(DateTime.Now.ToString("dd MMMM yyyy HH-mm-ss") + ".txt");
-            file.WriteLine(lines);
-
-            file.Close();
 
             return population.First().Instance;
         }
@@ -64,9 +56,9 @@ namespace geneuro {
 
             foreach (Chromosome chromosome in population) {
                 chromosome.Evaluate(data, tests);
+
                 string info = i++ + ": " + chromosome.Instance.Inspect() + "; " + chromosome.LearningRate + " : " + chromosome.Unfitness;
                 Console.WriteLine(info);
-                lines += info + "\n";
             }
         }
 

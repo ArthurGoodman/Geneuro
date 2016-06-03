@@ -34,6 +34,7 @@
             this.networkLabel = new System.Windows.Forms.Label();
             this.networkBrowseButton = new System.Windows.Forms.Button();
             this.clearButton = new System.Windows.Forms.Button();
+            this.saveButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // dataBrowseButton
@@ -136,11 +137,22 @@
             this.clearButton.UseVisualStyleBackColor = true;
             this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
             // 
+            // saveButton
+            // 
+            this.saveButton.Location = new System.Drawing.Point(456, 61);
+            this.saveButton.Name = "saveButton";
+            this.saveButton.Size = new System.Drawing.Size(75, 23);
+            this.saveButton.TabIndex = 15;
+            this.saveButton.Text = "Save";
+            this.saveButton.UseVisualStyleBackColor = true;
+            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(624, 441);
+            this.Controls.Add(this.saveButton);
             this.Controls.Add(this.clearButton);
             this.Controls.Add(this.networkBrowseButton);
             this.Controls.Add(this.networkLabel);
@@ -171,5 +183,6 @@
         private System.Windows.Forms.Label networkLabel;
         private System.Windows.Forms.Button networkBrowseButton;
         private System.Windows.Forms.Button clearButton;
+        private System.Windows.Forms.Button saveButton;
     }
 }
