@@ -5,25 +5,28 @@ namespace geneuro {
     class Program {
         [STAThread]
         static void Main(string[] args) {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
-        }
+            try {
+                Settings.Load();
 
-        //static void Main(string[] args) {
-        //    try {
-        //        Settings.Load();
-        //        Run(args);
-        //    } catch (Exception e) {
-        //        Console.WriteLine(e.Message);
-        //    }
-        //}
+                if (args.Length > 0)
+                    Run(args);
+                else {
+                    Application.EnableVisualStyles();
+                    Application.SetCompatibleTextRenderingDefault(false);
+                    Application.Run(new MainForm());
+                }
+            } catch (Exception e) {
+                Console.WriteLine(e.Message);
+            }
+        }
 
         private static void InvalidArguments() {
             throw new Exception("error: invalid arguments");
         }
 
         static void Run(string[] args) {
+            Engine.Output = new ConsoleStreamOutput();
+
             if (args.Length == 0)
                 throw new Exception("error: invalid arguments\nUse /? or /help to see available commands");
 
@@ -68,30 +71,21 @@ namespace geneuro {
                     for (int i = 0; i < layersSizes.Length; i++)
                         layersSizes[i] = int.Parse(args[i + 1]);
 
-                    net = new Perceptron(layersSizes);
-                    net.Initialize();
-                    net.Save(Settings.Instance.NetworkFileName);
+                    Engine.Create(layersSizes);
                     break;
 
                 case "/learn":
                     if (args.Length != 1)
                         InvalidArguments();
 
-                    net = new Perceptron();
-                    net.Load(Settings.Instance.NetworkFileName);
-                    net.Learn(TrainingSet.Load(Settings.Instance.DataDirectoryPath));
-                    net.Save(Settings.Instance.NetworkFileName);
+                    Engine.Learn();
                     break;
 
                 case "/classify":
                     if (args.Length != 2)
                         InvalidArguments();
 
-                    string imagePath = args[1];
-
-                    net = new Perceptron();
-                    net.Load(Settings.Instance.NetworkFileName);
-                    Console.WriteLine(net.Classify(ImageLoader.LoadImage(imagePath)));
+                    Engine.Classify(args[1]);
                     break;
 
                 case "/optimize":

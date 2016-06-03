@@ -7,7 +7,6 @@ namespace geneuro {
 
         private Random random = new Random();
         private Layer[] layers;
-        private string lines = null;
 
         public Perceptron() {
         }
@@ -54,7 +53,7 @@ namespace geneuro {
                     maxError = Math.Max(maxError, LearnExample(example));
 
                 if (verbose)
-                    Console.WriteLine(step + ": " + maxError);
+                    Engine.Output.WriteLine(step + ": " + maxError);
 
                 if (maxError <= Settings.Instance.MaxError)
                     break;

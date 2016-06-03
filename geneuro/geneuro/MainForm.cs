@@ -1,37 +1,59 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 
 namespace geneuro {
     public partial class MainForm : Form {
         public MainForm() {
             InitializeComponent();
+
+            CenterToScreen();
+
+            Engine.Output = new WindowStreamOutput(console);
+
+            dataEdit.Text = Path.GetFullPath(Settings.Instance.DataDirectoryPath);
+            networkEdit.Text = Path.GetFullPath(Settings.Instance.NetworkFileName);
         }
 
         private void dataBrowseButton_Click(object sender, EventArgs e) {
             FolderBrowserDialog dlg = new FolderBrowserDialog();
 
-            if (dlg.ShowDialog() == DialogResult.OK) {
-                string path = dlg.SelectedPath;
-                dataEdit.Text = path;
-            }
+            if (dlg.ShowDialog() == DialogResult.OK)
+                Settings.Instance.DataDirectoryPath = dataEdit.Text = dlg.SelectedPath;
         }
 
-        private void testsBrowseButton_Click(object sender, EventArgs e) {
-            FolderBrowserDialog dlg = new FolderBrowserDialog();
+        private void networkBrowseButton_Click(object sender, EventArgs e) {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.InitialDirectory = Directory.GetCurrentDirectory();
 
-            if (dlg.ShowDialog() == DialogResult.OK) {
-                string path = dlg.SelectedPath;
-                testEdit.Text = path;
-            }
+            if (dlg.ShowDialog() == DialogResult.OK)
+                Settings.Instance.NetworkFileName = networkEdit.Text = dlg.FileName;
         }
 
         private void createButton_Click(object sender, EventArgs e) {
+            CreateDialog dlg = new CreateDialog();
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+                Engine.Create(dlg.Sizes());
         }
 
         private void learnButton_Click(object sender, EventArgs e) {
+            Engine.Learn();
+            Engine.Output.WriteLine("");
         }
 
         private void classifyButton_Click(object sender, EventArgs e) {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.InitialDirectory = Directory.GetCurrentDirectory();
+
+            if (dlg.ShowDialog() == DialogResult.OK) {
+                Engine.Classify(dlg.FileName);
+                Engine.Output.WriteLine("");
+            }
+        }
+
+        private void clearButton_Click(object sender, EventArgs e) {
+            console.Clear();
         }
     }
 }

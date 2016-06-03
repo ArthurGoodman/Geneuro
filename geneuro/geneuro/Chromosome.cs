@@ -97,13 +97,12 @@ namespace geneuro {
                     newLayersSizes[LayersSizes.Length] = random.Next(Settings.Instance.HiddenLayerSizeRange.First, Settings.Instance.HiddenLayerSizeRange.Second + 1);
 
                     LayersSizes = newLayersSizes;
-                }
-                else if(LayersSizes.Length > 0) {
+                } else if (LayersSizes.Length > 0) {
                     int[] newLayersSizes = new int[LayersSizes.Length - 1];
 
                     for (int i = 0; i < LayersSizes.Length - 1; i++)
                         newLayersSizes[i] = LayersSizes[i];
-                    
+
                     LayersSizes = newLayersSizes;
                 }
             }
