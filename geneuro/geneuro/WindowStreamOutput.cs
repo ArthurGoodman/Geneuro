@@ -11,10 +11,16 @@ namespace geneuro {
 
         public void Write(object str) {
             textBox.Text += str.ToString();
+            textBox.Update();
+            textBox.SelectionStart = textBox.Text.Length;
+            textBox.ScrollToCaret();
         }
 
         public void WriteLine(object str) {
             textBox.Text += str.ToString() + Environment.NewLine;
+            textBox.Update();
+            textBox.SelectionStart = textBox.Text.Length;
+            textBox.ScrollToCaret();
         }
     }
 }

@@ -19,7 +19,7 @@ namespace geneuro {
             FolderBrowserDialog dlg = new FolderBrowserDialog();
 
             if (dlg.ShowDialog() == DialogResult.OK)
-                Settings.Instance.DataDirectoryPath = dataEdit.Text = dlg.SelectedPath;
+                dataEdit.Text = dlg.SelectedPath;
         }
 
         private void networkBrowseButton_Click(object sender, EventArgs e) {
@@ -27,10 +27,13 @@ namespace geneuro {
             dlg.InitialDirectory = Directory.GetCurrentDirectory();
 
             if (dlg.ShowDialog() == DialogResult.OK)
-                Settings.Instance.NetworkFileName = networkEdit.Text = dlg.FileName;
+                networkEdit.Text = dlg.FileName;
         }
 
         private void createButton_Click(object sender, EventArgs e) {
+            Settings.Instance.DataDirectoryPath = dataEdit.Text;
+            Settings.Instance.NetworkFileName = networkEdit.Text;
+
             CreateDialog dlg = new CreateDialog();
 
             if (dlg.ShowDialog() == DialogResult.OK)
@@ -38,11 +41,17 @@ namespace geneuro {
         }
 
         private void learnButton_Click(object sender, EventArgs e) {
+            Settings.Instance.DataDirectoryPath = dataEdit.Text;
+            Settings.Instance.NetworkFileName = networkEdit.Text;
+
             Engine.Learn();
             Engine.Output.WriteLine("");
         }
 
         private void classifyButton_Click(object sender, EventArgs e) {
+            Settings.Instance.DataDirectoryPath = dataEdit.Text;
+            Settings.Instance.NetworkFileName = networkEdit.Text;
+
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.InitialDirectory = Directory.GetCurrentDirectory();
 
