@@ -23,7 +23,7 @@ namespace geneuro {
         }
 
         private void networkBrowseButton_Click(object sender, EventArgs e) {
-            OpenFileDialog dlg = new OpenFileDialog();
+            SaveFileDialog dlg = new SaveFileDialog();
             dlg.InitialDirectory = Directory.GetCurrentDirectory();
 
             if (dlg.ShowDialog() == DialogResult.OK)
