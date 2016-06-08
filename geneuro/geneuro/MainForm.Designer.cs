@@ -96,6 +96,7 @@
             // 
             // console
             // 
+            this.console.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.console.Location = new System.Drawing.Point(12, 90);
             this.console.Name = "console";
             this.console.Size = new System.Drawing.Size(600, 339);
