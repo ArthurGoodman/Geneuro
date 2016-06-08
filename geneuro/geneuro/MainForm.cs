@@ -64,5 +64,9 @@ namespace geneuro {
             if (dlg.ShowDialog() == DialogResult.OK)
                 File.WriteAllText(dlg.FileName, console.Text);
         }
+
+        private void helpButton_Click(object sender, EventArgs e) {
+            MessageBox.Show("This is help.", "Help");
+        }
     }
 }

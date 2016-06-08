@@ -35,6 +35,7 @@
             this.networkBrowseButton = new System.Windows.Forms.Button();
             this.clearButton = new System.Windows.Forms.Button();
             this.saveButton = new System.Windows.Forms.Button();
+            this.helpButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // dataBrowseButton
@@ -129,7 +130,7 @@
             // 
             // clearButton
             // 
-            this.clearButton.Location = new System.Drawing.Point(537, 61);
+            this.clearButton.Location = new System.Drawing.Point(456, 61);
             this.clearButton.Name = "clearButton";
             this.clearButton.Size = new System.Drawing.Size(75, 23);
             this.clearButton.TabIndex = 14;
@@ -139,7 +140,7 @@
             // 
             // saveButton
             // 
-            this.saveButton.Location = new System.Drawing.Point(456, 61);
+            this.saveButton.Location = new System.Drawing.Point(375, 61);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(75, 23);
             this.saveButton.TabIndex = 15;
@@ -147,11 +148,22 @@
             this.saveButton.UseVisualStyleBackColor = true;
             this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
             // 
+            // helpButton
+            // 
+            this.helpButton.Location = new System.Drawing.Point(537, 61);
+            this.helpButton.Name = "helpButton";
+            this.helpButton.Size = new System.Drawing.Size(75, 23);
+            this.helpButton.TabIndex = 16;
+            this.helpButton.Text = "Help";
+            this.helpButton.UseVisualStyleBackColor = true;
+            this.helpButton.Click += new System.EventHandler(this.helpButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(624, 441);
+            this.Controls.Add(this.helpButton);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.clearButton);
             this.Controls.Add(this.networkBrowseButton);
@@ -184,5 +196,6 @@
         private System.Windows.Forms.Button networkBrowseButton;
         private System.Windows.Forms.Button clearButton;
         private System.Windows.Forms.Button saveButton;
+        private System.Windows.Forms.Button helpButton;
     }
 }
