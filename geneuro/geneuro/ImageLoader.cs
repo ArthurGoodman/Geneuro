@@ -9,7 +9,7 @@ namespace geneuro {
             
             for (int i = 0; i < data.Length; i++) {
                 Color color = image.GetPixel(i % image.Width, i / image.Width);
-                data[i] = 1.0 - (double)(color.R + color.G + color.B) / 3 / 255;
+                data[i] = 1.0 - (double)(color.A + color.R + color.G + color.B) / 4 / 255;
             }
 
             return data;
